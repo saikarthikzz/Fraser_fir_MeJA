@@ -18,14 +18,15 @@ today <- format(today, "%Y%m%d")
 
 
 # Salmon quant file location
-quant_files <- dir(path = 'Data',
+quant_files <- dir(path = 'Needle-Data',
                            pattern = 'quant.sf',
                            full.names = TRUE,
                            recursive = TRUE,
                            include.dirs = FALSE)
 
 length(quant_files)
-# [1] 44
+# [1] 22
+
 
 # Read expressions with tximport
 expressions <- tximport(
@@ -51,27 +52,24 @@ genotypes <- str_sub(samples, 1, 3) |>
 treatments <- str_sub(samples, 4, 4) |> 
   as.factor()
 
-tissues <- str_sub(samples, 5, 5) |> 
-  as.factor()
-
 biol_reps <- str_sub(samples, 6, 6)
 
-exp_design <- data.frame(samples, genotypes, treatments, tissues, biol_reps)
+exp_design <- data.frame(samples, genotypes, treatments, biol_reps)
 
 exp_design$groups <- with(exp_design, interaction(genotypes, treatments))
 
 exp_design
-#    samples genotypes treatments tissues biol_reps groups
-# 1   G51CB1       G51          C       B         1  G51.C
-# 2   G51CB2       G51          C       B         2  G51.C
-# 3   G51CB3       G51          C       B         3  G51.C
-# 4   G51CN1       G51          C       N         1  G51.C
-# 5   G51CN2       G51          C       N         2  G51.C
-# 6   G51CN3       G51          C       N         3  G51.C
-# 7   G51MB1       G51          M       B         1  G51.M
-# 8   G51MB2       G51          M       B         2  G51.M
-# 9   G51MB3       G51          M       B         3  G51.M
-# 10  G51MN1       G51          M       N         1  G51.M
+#    samples genotypes treatments biol_reps groups
+# 1   G51CN1       G51          C         1  G51.C
+# 2   G51CN2       G51          C         2  G51.C
+# 3   G51CN3       G51          C         3  G51.C
+# 4   G51MN1       G51          M         1  G51.M
+# 5   G51MN2       G51          M         2  G51.M
+# 6   G51MN3       G51          M         3  G51.M
+# 7   G85CN1       G85          C         1  G85.C
+# 8   G85CN2       G85          C         2  G85.C
+# 9   G85CN3       G85          C         3  G85.C
+# 10  G85CN4       G85          C         4  G85.C
 # You get the rest ...
 
 
@@ -84,9 +82,9 @@ colnames(x$counts) <- samples
 keepers <- filterByExpr(x, group = exp_design$groups)
   
 table(keepers)
-#  FALSE   TRUE
-# 776320 156312
-  
+#  FALSE   TRUE 
+# 418727 143480 
+
 x <- x[keepers, ]
 
 # Create model matrix
@@ -98,13 +96,13 @@ mod_matrix
 # 1            1           0           0           0           0           0
 # 2            1           0           0           0           0           0
 # 3            1           0           0           0           0           0
-# 4            1           0           0           0           0           0
-# 5            1           0           0           0           0           0
-# 6            1           0           0           0           0           0
-# 7            0           0           0           1           0           0
-# 8            0           0           0           1           0           0
-# 9            0           0           0           1           0           0
-# 10           0           0           0           1           0           0
+# 4            0           0           0           1           0           0
+# 5            0           0           0           1           0           0
+# 6            0           0           0           1           0           0
+# 7            0           1           0           0           0           0
+# 8            0           1           0           0           0           0
+# 9            0           1           0           0           0           0
+# 10           0           1           0           0           0           0
 # You get the rest ...
 
 
@@ -123,7 +121,7 @@ contrasts_matrix <- makeContrasts(
 # Transformation function
 v <- cpm(y, log = TRUE)
   
-log_cpm_filename <- str_c('Results/Fraser_Fir_MeJa_logCPM_', today, '.txt')
+log_cpm_filename <- str_c('Results/Fraser_Fir_MeJa_Needles_logCPM_', today, '.txt')
   
 log_cpm <- data.frame(v) |> 
   rownames_to_column(var = "contig")
@@ -142,9 +140,9 @@ summary(decideTests(fit3, method = 'separate',
                     p.value = 0.05, lfc = 2))
 
 #           g97    g85    g51
-# Down       96    459     12
-# NotSig 156109 154220 156296
-# Up        107   1633      4
+# Down      309    264     65
+# NotSig 142962 141121 143389
+# Up        209   2095     26
 
 # To get the contrasts
 contrasts <- colnames(fit3$contrasts)

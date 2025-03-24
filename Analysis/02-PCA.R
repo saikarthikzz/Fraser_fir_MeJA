@@ -12,18 +12,18 @@ library(tibble)
 
 
 # Read CPM file
-logCPM <- read_delim("Results/Fraser_Fir_MeJa_logCPM_20250219.txt", 
+logCPM <- read_delim("Results/Fraser_Fir_MeJa_Needles_logCPM_20250320.txt", 
                      col_names = TRUE, show_col_types = FALSE)
 
 # Remove first column header to run PCA
 logCPM <- as.data.frame(logCPM) |> 
   column_to_rownames('contig')
 
-needles <- str_detect(colnames(logCPM), 'N')
+# needles <- str_detect(colnames(logCPM), 'N')
 
-needles_logCPM <- logCPM[needles]
+# needles_logCPM <- logCPM[needles]
 
-pca <- prcomp(t(needles_logCPM), scale. = TRUE)
+pca <- prcomp(t(logCPM), scale. = TRUE)
 
 summary <- summary(pca)
 
@@ -39,8 +39,8 @@ dat$genotype <- str_extract(rownames(dat), "G\\d\\d") |>
 dat$treatment <- str_split_i(rownames(dat), '', 4) |>
   as.factor()
 
-dat$tissue <- str_split_i(rownames(dat), '', 5) |>
-  as.factor()
+# dat$tissue <- str_split_i(rownames(dat), '', 5) |>
+#   as.factor()
 
 dat$treatment <- str_split_i(rownames(dat), '', 4)
 
@@ -52,6 +52,6 @@ g <-  ggplot(dat, aes(PC1, PC2, label = rownames(dat))) +
        y = str_c("PC2 (", pc2_var, "%)")) + 
   theme_bw()
 
-plotname <- str_c("Results/Fraser_Fir_MeJa_needles_PCA.png")
+plotname <- str_c("Results/Fraser_Fir_MeJa_needles_PCA.20250320.png")
 
 ggsave(plotname, g)
