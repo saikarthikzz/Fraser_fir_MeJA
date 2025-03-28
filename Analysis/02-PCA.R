@@ -12,16 +12,17 @@ library(tibble)
 
 
 # Read CPM file
-logCPM <- read_delim("Results/Fraser_Fir_MeJa_Needles_logCPM_20250320.txt", 
+logCPM <- read_delim("Results/Fraser_Fir_MeJa_Needles_logCPM_20250328.txt", 
                      col_names = TRUE, show_col_types = FALSE)
+
+# Remove outliers
+logCPM <- logCPM[, -which(names(logCPM) == "G97MN3")]
+logCPM <- logCPM[, -which(names(logCPM) == "G85CN3")]
+
 
 # Remove first column header to run PCA
 logCPM <- as.data.frame(logCPM) |> 
   column_to_rownames('contig')
-
-# needles <- str_detect(colnames(logCPM), 'N')
-
-# needles_logCPM <- logCPM[needles]
 
 pca <- prcomp(t(logCPM), scale. = TRUE)
 
@@ -52,6 +53,6 @@ g <-  ggplot(dat, aes(PC1, PC2, label = rownames(dat))) +
        y = str_c("PC2 (", pc2_var, "%)")) + 
   theme_bw()
 
-plotname <- str_c("Results/Fraser_Fir_MeJa_needles_PCA.20250320.png")
+plotname <- str_c("Results/Fraser_Fir_MeJa_needles_PCA.20250328.png")
 
 ggsave(plotname, g)
