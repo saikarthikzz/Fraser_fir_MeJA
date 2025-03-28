@@ -82,8 +82,8 @@ colnames(x$counts) <- samples
 keepers <- filterByExpr(x, group = exp_design$groups)
   
 table(keepers)
-#  FALSE   TRUE 
-# 418727 143480 
+# FALSE  TRUE 
+# 86680 60009 
 
 x <- x[keepers, ]
 
@@ -139,10 +139,11 @@ summary(decideTests(fit3, method = 'separate',
                     adjust.method = 'BH', 
                     p.value = 0.05, lfc = 2))
 
-#           g97    g85    g51
-# Down      309    264     65
-# NotSig 142962 141121 143389
-# Up        209   2095     26
+#          g97   g85   g51
+# Down     218   109    42
+# NotSig 59633 59012 59954
+# Up       158   888    13
+
 
 # To get the contrasts
 contrasts <- colnames(fit3$contrasts)
