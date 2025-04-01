@@ -11,13 +11,17 @@ library(stringr)
 library(tibble)
 
 
+# Nark all output by date
+today <- Sys.Date()
+today <- format(today, "%Y%m%d")
+
 # Read CPM file
-logCPM <- read_delim("Results/Fraser_Fir_MeJa_Needles_logCPM_20250328.txt", 
+logCPM <- read_delim("Results/Fraser_Fir_MeJa_Needles_logCPM_20250401.txt", 
                      col_names = TRUE, show_col_types = FALSE)
 
 # Remove outliers
-logCPM <- logCPM[, -which(names(logCPM) == "G97MN3")]
-logCPM <- logCPM[, -which(names(logCPM) == "G85CN3")]
+# logCPM <- logCPM[, -which(names(logCPM) == "G97MN3")]
+# logCPM <- logCPM[, -which(names(logCPM) == "G85CN3")]
 
 
 # Remove first column header to run PCA
@@ -40,9 +44,6 @@ dat$genotype <- str_extract(rownames(dat), "G\\d\\d") |>
 dat$treatment <- str_split_i(rownames(dat), '', 4) |>
   as.factor()
 
-# dat$tissue <- str_split_i(rownames(dat), '', 5) |>
-#   as.factor()
-
 dat$treatment <- str_split_i(rownames(dat), '', 4)
 
 g <-  ggplot(dat, aes(PC1, PC2, label = rownames(dat))) +
@@ -53,6 +54,6 @@ g <-  ggplot(dat, aes(PC1, PC2, label = rownames(dat))) +
        y = str_c("PC2 (", pc2_var, "%)")) + 
   theme_bw()
 
-plotname <- str_c("Results/Fraser_Fir_MeJa_needles_PCA.20250328.png")
+plotname <- str_c('Results/Fraser_Fir_MeJa_needles_PCA.', today, '.png')
 
 ggsave(plotname, g)
