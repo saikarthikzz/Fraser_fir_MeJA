@@ -24,8 +24,15 @@ quant_files <- dir(path = 'Needle-Data',
                            recursive = TRUE,
                            include.dirs = FALSE)
 
+# Remove outliers from post DE analysis
+quant_files <- quant_files[!str_detect(quant_files, '97CN3')]
+quant_files <- quant_files[!str_detect(quant_files, '97MN3')]
+
+quant_files <- quant_files[!str_detect(quant_files, '85CN3')]
+quant_files <- quant_files[!str_detect(quant_files, '85MN3')]
+
 length(quant_files)
-# [1] 22
+# [1] 18
 
 
 # Read expressions with tximport
@@ -68,8 +75,8 @@ exp_design
 # 6   G51MN3       G51          M         3  G51.M
 # 7   G85CN1       G85          C         1  G85.C
 # 8   G85CN2       G85          C         2  G85.C
-# 9   G85CN3       G85          C         3  G85.C
-# 10  G85CN4       G85          C         4  G85.C
+# 9   G85CN4       G85          C         4  G85.C
+# 10  G85MN1       G85          M         1  G85.M
 # You get the rest ...
 
 
@@ -83,7 +90,7 @@ keepers <- filterByExpr(x, group = exp_design$groups)
   
 table(keepers)
 # FALSE  TRUE 
-# 86680 60009 
+# 89387 57302  
 
 x <- x[keepers, ]
 
@@ -102,7 +109,7 @@ mod_matrix
 # 7            0           1           0           0           0           0
 # 8            0           1           0           0           0           0
 # 9            0           1           0           0           0           0
-# 10           0           1           0           0           0           0
+# 10           0           0           0           0           1           0
 # You get the rest ...
 
 
@@ -113,7 +120,7 @@ y <- calcNormFactors(x)
 contrasts_matrix <- makeContrasts(
   g97 = groupsG97_M - groupsG97_C,
   g85 = groupsG85_M - groupsG85_C,
-  g51 = groupsG51_C - groupsG51_M,
+  g51 = groupsG51_M - groupsG51_C,
   levels = mod_matrix
 )
 
@@ -140,9 +147,9 @@ summary(decideTests(fit3, method = 'separate',
                     p.value = 0.05, lfc = 2))
 
 #          g97   g85   g51
-# Down     218   109    42
-# NotSig 59633 59012 59954
-# Up       158   888    13
+# Down     116   108    17
+# NotSig 55980 56304 57172
+# Up      1206   890   113
 
 
 # To get the contrasts
