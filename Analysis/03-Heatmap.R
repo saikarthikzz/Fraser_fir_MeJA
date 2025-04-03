@@ -14,22 +14,16 @@ library(purrr)
 
 
 # Read CPM file
-logCPM <- read_delim("Results/Fraser_Fir_MeJa_Needles_logCPM_20250328.txt", 
+logCPM <- read_delim("Results/Fraser_Fir_MeJa_Needles_logCPM_20250401.txt", 
                      col_names = TRUE, show_col_types = FALSE)
 
-# Remove outliers
-# logCPM <- logCPM[, -which(names(logCPM) == "G97CN3")]
-# logCPM <- logCPM[, -which(names(logCPM) == "G97MN3")]
-# logCPM <- logCPM[, -which(names(logCPM) == "G85CN3")]
-
-
-g51_de <- read_delim("Results/Fraser_Fir_g51_20250328.txt", 
+g51_de <- read_delim("Results/Fraser_Fir_g51_20250401.txt", 
                      col_names = TRUE, show_col_types = FALSE)
 
-g85_de <- read_delim("Results/Fraser_Fir_g85_20250328.txt", 
+g85_de <- read_delim("Results/Fraser_Fir_g85_20250401.txt", 
                      col_names = TRUE, show_col_types = FALSE)
 
-g97_de <- read_delim("Results/Fraser_Fir_g97_20250328.txt", 
+g97_de <- read_delim("Results/Fraser_Fir_g97_20250401.txt", 
                      col_names = TRUE, show_col_types = FALSE)
 
 
@@ -41,7 +35,7 @@ de_contigs <- c(g51_de$contig, g85_de$contig, g97_de$contig) |>
 # Check the number of unique contigs that were differentially expressed
 # across all genotypes
 length(de_contigs)
-# [1] 1297
+# [1] 2112
 
 
 # Filter logCPM for those only differentially expressed
@@ -49,7 +43,7 @@ de_logCPM <- logCPM |>
   filter(contig %in% de_contigs)
 
 dim(de_logCPM)
-# [1] 1297   20
+# [1] 2112   19
 
 
 # We will take the column name and extract the genotype and treatment
@@ -73,7 +67,7 @@ mean_de_logCPM <- as.data.frame(mean_de_logCPM)
 rownames(mean_de_logCPM) <- de_logCPM$contig
 
 dim(mean_de_logCPM)
-# [1] 1297    6
+# [1] 2112    6
 
 today <- Sys.Date()
 today <- format(today, "%Y%m%d")
@@ -84,4 +78,5 @@ heatmaply(mean_de_logCPM,
           show_dendrogram = c(TRUE, FALSE), 
           cexRow = FALSE, 
           showticklabels = c(TRUE, FALSE),
-          file = str_c("Results/draft_heatmap_", today, ".png"))
+          file = c(str_c("Results/draft_heatmap_", today, ".png"), 
+                   str_c("Results/draft_heatmap_", today, ".html")))
